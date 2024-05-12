@@ -1,22 +1,22 @@
-﻿using Dalamud.Game.Command;
+using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using System.IO;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
-using SamplePlugin.Windows;
+using FFXIVAutoTankStance.Windows;
 
-namespace SamplePlugin;
+namespace FFXIVAutoTankStance;
 
 public sealed class Plugin : IDalamudPlugin
 {
-    private const string CommandName = "/pmycommand";
+    private const string CommandName = "/autotank";
 
     private DalamudPluginInterface PluginInterface { get; init; }
     private ICommandManager CommandManager { get; init; }
     public Configuration Configuration { get; init; }
 
-    public readonly WindowSystem WindowSystem = new("SamplePlugin");
+    public readonly WindowSystem WindowSystem = new("Auto Tank Stance");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
 
