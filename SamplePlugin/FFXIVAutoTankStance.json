@@ -1,7 +1,7 @@
 {
     "Author": "Vektor Prime",
-    "Name": "Auto Tank Stance",
-    "Punchline": "Auto Tank Stance",
+    "Name": "AutoTankStance",
+    "Punchline": "Never forget to enable the Tank stance again!",
     "Description": "A FFXIV plugin for Dalamud to automatically enable your tank stance.",
     "ApplicableVersion": "any",
     "Tags": [

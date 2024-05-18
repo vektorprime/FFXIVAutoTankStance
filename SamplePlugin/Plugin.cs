@@ -6,6 +6,8 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
 using FFXIVAutoTankStance.Windows;
 
+
+
 namespace FFXIVAutoTankStance;
 
 public sealed class Plugin : IDalamudPlugin
@@ -20,6 +22,8 @@ public sealed class Plugin : IDalamudPlugin
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
 
+  
+
     public Plugin(
         [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
         [RequiredVersion("1.0")] ICommandManager commandManager,
@@ -28,6 +32,9 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface = pluginInterface;
         CommandManager = commandManager;
 
+        //Creating service is critical for getting it to work
+        PluginInterface.Create<Service>();
+    
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(PluginInterface);
 
@@ -42,6 +49,24 @@ public sealed class Plugin : IDalamudPlugin
 
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(MainWindow);
+        
+        //TODO figoure out best way to sync this object to the window
+        //Static or pass it in via something
+        //GameData gameData = new GameData();
+        //if (GameData.getCurrentJobClass() == GameData.JobClass.Paladin)
+        //{
+        //    // unsafe
+        //    // {
+        //    //ActionMgr actionMgr = new ActionMgr();
+        //    //ActionType ironWillType = ActionType.Action;
+        //    // ActionMgr.DoAction(ActionType.Action, 28);
+        //    // }
+        //    //ActionManager->Instance()->UseAction()
+
+           
+        //}
+
+        
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
@@ -56,6 +81,49 @@ public sealed class Plugin : IDalamudPlugin
 
         // Adds another button that is doing the same but for the main ui of the plugin
         PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
+
+        Service.Framework.Update += OnFrameworkUpdate;
+
+    }
+
+    private void OnFrameworkUpdate(IFramework framework)
+    {
+        if (Service.ClientState.IsLoggedIn)
+        {
+           // if (GameData.getCurrentJobClass() == GameData.JobClass.Paladin)
+           // {
+
+                //test code that should always run if we're a Pali
+                if (GameData.getCurrentJobClass() == GameData.JobClass.Paladin)
+                {
+                    LocalPlayer tankPlayer = new LocalPlayer();
+                    if (!tankPlayer.isTankStanceOn() && !tankPlayer.isWatchingCutscene())
+                    {
+                        ActionMgr.UseIronWillSkill();
+                    }
+
+               // }
+                
+
+                //code to use when only using tank stance in duty/dungeon
+                //if (Service.DutyState.IsDutyStarted)
+                //{
+                //    if (GameData.getCurrentJobClass() == GameData.JobClass.Paladin)
+                //    {
+                //        LocalPlayer tankPlayer = new LocalPlayer();
+                //        if (!tankPlayer.isTankStanceOn())
+                //        {
+                //            ActionMgr.UseIronWillSkill();
+                //        }
+
+                //    }
+                //}
+
+            }
+
+
+        }
+
     }
 
     public void Dispose()
@@ -66,6 +134,7 @@ public sealed class Plugin : IDalamudPlugin
         MainWindow.Dispose();
 
         CommandManager.RemoveHandler(CommandName);
+        Service.Framework.Update -= OnFrameworkUpdate;
     }
 
     private void OnCommand(string command, string args)
